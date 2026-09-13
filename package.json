@@ -1,0 +1,30 @@
+{
+  "name": "backend-project",
+  "version": "1.0.0",
+  "description": "First Project",
+  "homepage": "https://github.com/Ronak-Sah/backend#readme",
+  "bugs": {
+    "url": "https://github.com/Ronak-Sah/backend/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ronak-Sah/backend.git"
+  },
+  "license": "ISC",
+  "author": "ronak",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "mongoose": "^9.10.0"
+  }
+}
