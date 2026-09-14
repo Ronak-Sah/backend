@@ -39,16 +39,18 @@ const userSchema = new mongoose.Schema({
     },
     refreshToken: {
         type: String,
-        required: true
+       
     }
 
 
 }, { timestamps: true });
 
-userSchema.pre('save', async () => {
-    bcrypt.hash(myPlaintextPassword, 10, (err, hash) => {
-        this.password = myPlaintextPassword;
-    });
+userSchema.pre('save', async function () {
+    if (!this.isModified("password")) {
+        return;
+    }
+    this.password=bcrypt.hash(this.password, 10);
+    
 });
 
 userSchema.methods.isPasswordCorrect = async (password) => {
