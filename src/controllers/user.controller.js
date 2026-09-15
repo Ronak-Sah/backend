@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { User } from "../models/users.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
+
 const registerUser = asyncHandler(async (req, res) => {
     // get user data
     // validation
@@ -13,28 +14,28 @@ const registerUser = asyncHandler(async (req, res) => {
     // make object
     // store in db
     // console.log(req.body);
-    const {userName, email, fullName, password}=req.body;
+    const { userName, email, fullName, password } = req.body;
 
-    if(userName=="" || email=="" || !email.endsWith("@gmail.com")){
-        throw new ApiError(400,"Enter valid username and email");
+    if (userName == "" || email == "" || !email.endsWith("@gmail.com")) {
+        throw new ApiError(400, "Enter valid username and email");
     }
-    if(fullName==""){
-        throw new ApiError(400,"Enter name");
-    }
-
-    if(password==""){
-        throw new ApiError(400,"Password empty");
+    if (fullName == "") {
+        throw new ApiError(400, "Enter name");
     }
 
-    const user=await User.findOne({
+    if (password == "") {
+        throw new ApiError(400, "Password empty");
+    }
+
+    const user = await User.findOne({
         $or: [
             { userName },
             { email }
         ]
     })
-    
-    if(user){
-        throw new ApiError(400,"User already exists in database");
+
+    if (user) {
+        throw new ApiError(400, "User already exists in database");
     }
 
     console.log("Username, name, email validation done");
@@ -42,15 +43,15 @@ const registerUser = asyncHandler(async (req, res) => {
     const avatarFilepath = req.files?.avatar?.[0]?.path;
     const coverImageFilepath = req.files?.coverImage[0]?.path;
 
-    if(!avatarFilepath || !coverImageFilepath){
-        throw new ApiError(400,"Image and cover image not reicived");
+    if (!avatarFilepath || !coverImageFilepath) {
+        throw new ApiError(400, "Image and cover image not reicived");
     }
 
     const avatarUploadResponse = await uploadOnCloudinary(avatarFilepath);
     const coverImageUploadResponse = await uploadOnCloudinary(coverImageFilepath);
 
-    if(coverImageUploadResponse==null || avatarUploadResponse==null){
-        throw new ApiError(400,"Error occured while uploading on cloudinary");
+    if (coverImageUploadResponse == null || avatarUploadResponse == null) {
+        throw new ApiError(400, "Error occured while uploading on cloudinary");
     }
 
     console.log("Avatar and cover image uploaded");
@@ -76,4 +77,58 @@ const registerUser = asyncHandler(async (req, res) => {
 
 )
 
-export { registerUser };
+
+const loginUser = asyncHandler(async (req, res) => {
+    const { userName, email, password } = req.body;
+
+    if (!userName && !email) {
+        throw new ApiError(400, "Username or email required");
+    }
+
+    if (!password) {
+        throw new ApiError(400, "Password required");
+    }
+
+    console.log("userName:", userName);
+    console.log("email:", email);
+    console.log("password:", password);
+
+    const user = await User.findOne({
+        $or: [
+            { userName },
+            { email }
+        ]
+    })
+
+    if (!user) {
+        throw new ApiError(400, "No account exists");
+    }
+    if (!(await user.isPasswordCorrect(password))) {
+        throw new ApiError(400, "Incorrect password");
+    }
+
+    const accessToken = await user.generateAccessTokens();
+    const refreshToken = await user.generateRefreshTokens();
+
+
+
+    user.refreshToken = refreshToken;
+
+    const response = await user.save({ validateBeforeSave: false });
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
+
+    const options = { httpOnly: true, secure: true };
+
+    return res.status(200)
+        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, options)
+        .json(new ApiResponse(
+            200,
+            {
+                user: loggedInUser, accessToken, refreshToken
+            },
+            "Login successfull"
+        ))
+})
+export { registerUser, loginUser };
