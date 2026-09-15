@@ -131,4 +131,28 @@ const loginUser = asyncHandler(async (req, res) => {
             "Login successfull"
         ))
 })
-export { registerUser, loginUser };
+
+const logoutUser = asyncHandler(async (req, res) => {
+    const user = req.user;
+
+    if (!user) {
+        throw new ApiError(400, "Session expired");
+    }
+
+    const userObject = await User.findById(user._id);
+
+    if (!userObject) {
+        throw new ApiError(400, "User not exists");
+    }
+
+    userObject.refreshToken = "";
+
+    await userObject.save({ validateBeforeSave: false });
+
+    return res
+        .status(200)
+        .clearCookie("refreshToken")
+        .clearCookie("accessToken")
+        .json(new ApiResponse(200, "User logget out successfully"));
+})
+export { registerUser, loginUser, logoutUser };
