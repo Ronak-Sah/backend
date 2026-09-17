@@ -20,9 +20,13 @@ app.get('/', (req, res) => {
 );
 
 
-import appRouter from "../src/routes/app.route.js"
+import appRouter from "../src/routes/user.route.js"
+import subscribeRouter from "../src/routes/subsriptions.route.js"
+import videosRouter from "../src/routes/video.route.js"
 
-app.use("/user",appRouter)
+app.use("/user",appRouter);
+app.use("/videos",videosRouter);
+app.use("/sub",subscribeRouter);
 
 
 export {app}

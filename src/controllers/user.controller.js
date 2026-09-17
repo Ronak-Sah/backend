@@ -40,8 +40,10 @@ const registerUser = asyncHandler(async (req, res) => {
 
     console.log("Username, name, email validation done");
 
+    // console.log(req.files);
+
     const avatarFilepath = req.files?.avatar?.[0]?.path;
-    const coverImageFilepath = req.files?.coverImage[0]?.path;
+    const coverImageFilepath = req.files?.coverImage?.[0]?.path;
 
     if (!avatarFilepath || !coverImageFilepath) {
         throw new ApiError(400, "Image and cover image not reicived");
@@ -76,7 +78,6 @@ const registerUser = asyncHandler(async (req, res) => {
 }
 
 )
-
 
 const loginUser = asyncHandler(async (req, res) => {
     const { userName, email, password } = req.body;

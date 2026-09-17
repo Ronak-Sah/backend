@@ -3,6 +3,7 @@ import { Router } from "express";
 import { upload } from "../middleware/multer.middleware.js";
 import verifyJWT from "../middleware/auth.middleware.js";
 
+
 const router = Router();
 
 router.post("/register", upload.fields([
@@ -17,3 +18,4 @@ router.get("/logout", verifyJWT, logoutUser)
 router.get("/refresh", refreshAccessToken)
 
 export default router;
+

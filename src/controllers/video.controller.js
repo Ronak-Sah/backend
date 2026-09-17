@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
-import { videoModel } from "../models/videos.model.js"
+import { VideosModel } from "../models/videos.model.js"
 
 
 const videoUpload = asyncHandler(async (req, res) => {
@@ -46,7 +46,7 @@ const videoUpload = asyncHandler(async (req, res) => {
 
     const duration = uploadVideoResponse.duration;
 
-    const videoUploadObject = await videoModel.create({
+    const videoUploadObject = await VideosModel.create({
         videoFile: uploadVideoResponse.secure_url,
         thumbnail: uploadThumbnailResponse.secure_url,
         owner: req.user._id,
