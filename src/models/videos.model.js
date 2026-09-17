@@ -10,6 +10,12 @@ const videoSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    viewedBy: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        }
+    ],
     owner:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
@@ -38,6 +44,6 @@ const videoSchema = new mongoose.Schema({
 
 },{ timestamps: true });
 
-const Videos = mongoose.model('Videos', videoSchema);
+const videoModel = mongoose.model('Videos', videoSchema);
 
-export { Videos }
+export { videoModel };
